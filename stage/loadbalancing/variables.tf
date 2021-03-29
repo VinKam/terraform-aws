@@ -1,0 +1,12 @@
+variable public_subnets {}
+variable public_sg {}
+variable network_vpc_id {}
+variable lb_healthy_threshold {}
+variable lb_unhealthy_threshold {}
+variable lb_timeout {}
+variable lb_interval {}
+variable tg_port {}
+variable tg_protocol {}
+variable listener_port {}
+variable listener_protocol {}
+

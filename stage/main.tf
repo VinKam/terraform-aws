@@ -36,3 +36,47 @@ module "networking" {
   access_cidrs = var.access_cidrs_in
   security_group_public = local.security_group_public
 }
+
+#module "database" {
+#  source = "./database"
+#  vpc_id = module.networking.network_vpc_id
+#  network_cidr = local.network_cidr
+#  private_subnet_ids = module.networking.private_subnet_ids
+#  db_storage = 5
+#  db_engine_version = "5.7.22"
+#  db_instance_class = "db.t2.micro"
+#  dbname = var.dbname
+#  dbuser = var.dbuser
+#  dbpassword = var.dbpass
+#  db_identifier = "vinkam-rds"
+#  skip_db_snapshot  = true
+#  db_subnet_group = true
+#}
+
+module "loadbalancing" {
+  source = "./loadbalancing"
+  public_subnets = module.networking.public_subnet_ids
+  public_sg = module.networking.public_sg
+  network_vpc_id = module.networking.network_vpc_id
+  lb_healthy_threshold = 2
+  lb_unhealthy_threshold = 2
+  lb_timeout = 3
+  lb_interval = 30
+  tg_port = 80
+  tg_protocol = "HTTP"
+  listener_port = 80
+  listener_protocol = "HTTP"
+}
+
+
+module "compute" {
+  source = "./computing"
+  instance_count = 1
+  instance_type = "t2.micro"
+  public_sg = module.networking.public_sg
+  public_subnet_ids = module.networking.public_subnet_ids
+  instance_vol_size = 10
+  instance_key_name = "cloud-network-vk"
+  instance_key_path = "/root/.ssh/cloud-network.pub"
+  public_target_arn = module.loadbalancing.public_target_arn
+}

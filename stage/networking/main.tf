@@ -94,6 +94,9 @@ resource "aws_security_group" "cloud_network_public" {
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = {
+    Name = "Public_Subnet"
+  }
 }
 
 resource "aws_security_group_rule" "cloud_network_public" {
